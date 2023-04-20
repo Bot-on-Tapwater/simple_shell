@@ -10,9 +10,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#define MAX_INPUT_SIZE 1024     /* IGNORE FOR NOW */
-#define MAX_TOKEN_SIZE 64       /* IGNORE FOR NOW */
-#define MAX_NUM_TOKENS 64       /* max number of whitespace/" " separated strings a user can enter */
+#define MAX_INPUT_SIZE 1024
+#define MAX_TOKEN_SIZE 64
+#define MAX_NUM_TOKENS 64       /* max number of whitespace/" " */
 
 #define MAX_ARGS 64
 #define MAX_PATH 1024
@@ -27,9 +27,9 @@ void printString(char *str);
 int getStringLength(const char *str);
 void writeStringToStderr(char *str);
 char *_getenv(const char *name);
-char* concatenateStrings(char *str1, char *str2);
-char* myStrcpy(char *dest, const char *src);
-char* myStrcat(char *dest, const char *src);
+char *concatenateStrings(char *str1, char *str2);
+char *myStrcpy(char *dest, const char *src);
+char *myStrcat(char *dest, const char *src);
 int myStrncmp(const char *s1, const char *s2, size_t n);
 void *my_memcpy(void *dest, const void *src, size_t n);
 void *my_realloc(void *ptr, size_t size);
@@ -40,6 +40,6 @@ int tokenize(char *input, char **tokens, int max_tokens);
 void execute(char **tokens);
 int my_strcmp(const char *str1, const char *str2);
 void execute_builtins(char *token, char **env);
-char** check_PATH(char **args);
-void print_string_array(char** array);
+char **check_PATH(char **args);
+
 #endif
