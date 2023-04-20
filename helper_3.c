@@ -56,3 +56,14 @@ int printenv(void)
 
 	return (0);
 }
+
+/* prints an array of strings */
+void print_string_array(char** array) 
+{
+	int i;
+
+	for (i = 0; array[i]; i++) 
+	{
+		printf("\n\t***element[%d]: %s***\n", i, array[i]);
+	}
+}

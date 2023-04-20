@@ -1,7 +1,5 @@
 #include "shell.h"
 
-extern char **environ;
-
 /* function declarations */
 
 
@@ -15,9 +13,13 @@ int main(void)
 	{
 		if (isatty(0))
 		{
+			/* printf("\nStep 1: interactive\n"); */
+
 			write(STDOUT_FILENO, "#cisfun$ ", 9);   /* displays prompt */
 		}
 		input = read_input(); /* read user input */
+		// printf("\nStep 1: get user input\n");
+		// printf("\n\tuser input: %s\n", input);
 		if (input == NULL) /* end of file */
 		{
 			if (isatty(0))
@@ -28,6 +30,8 @@ int main(void)
 			exit(0);
 		}
 		num_tokens = tokenize(input, tokens, MAX_NUM_TOKENS); /* tokenize user input */
+		// printf("\nStep 2: tokenize input\n");
+		// print_string_array(tokens);
 		if (num_tokens > 0) /* only true if at least one string is entered */
 		{
 			execute(tokens); /* execute user command */
@@ -57,18 +61,24 @@ int tokenize(char *input, char **tokens, int max_tokens)
 void execute(char **tokens)
 {
 	pid_t pid;
-	char **env = environ;
+	/* char **env = environ; */
 
 	if (my_strcmp(tokens[0], "exit") == 0 || my_strcmp(tokens[0], "env") == 0) /* check if command is built in */
 	{
-		execute_builtins(tokens[0], env);
+		execute_builtins(tokens[0], environ);
 	}
 	else
 	{
 		pid = fork(); /* create child process using fork since we are about to call execve() */
 		if (pid == 0) /* fork() is 0 for child process thus pid == 0 if it's a child process */
 		{
+			// printf("\nStep 3: Check if command exists in PATH directories \n");
 			tokens = check_PATH(tokens);
+			// printf("\nStep 4: Update your array of tokens");
+			// print_string_array(tokens);
+
+			/* print_string_array(tokens); */
+
 			execve(tokens[0], tokens, environ); /* execute commands using execve() */
 			perror("execve failure"); /* only execeutes if execve fails */
 			exit(1); /* only execeutes if execve fails */

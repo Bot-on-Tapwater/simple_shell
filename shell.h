@@ -18,6 +18,8 @@
 #define MAX_PATH 1024
 #define DELIMITERS " \t\r\n\a"
 
+extern char **environ;
+
 /* char *read_input(void); */
 char **parse_input(char *line);
 int execute_command(char **args, char *path[]);
@@ -39,4 +41,5 @@ void execute(char **tokens);
 int my_strcmp(const char *str1, const char *str2);
 void execute_builtins(char *token, char **env);
 char** check_PATH(char **args);
+void print_string_array(char** array);
 #endif

@@ -1,53 +1,11 @@
 #include "shell.h"
 
-extern char **environ; /* global environment variable */
-
-/* extract tokens from user input string */
-char **parse_input(char *line)
+char** check_PATH(char **args)
 {
-    	int bufsize = MAX_ARGS; /* memsize for array of strings/tokens */
-   	int position = 0; /* tracks index in array of strings/tokens */
-    	char **tokens = malloc(bufsize * sizeof(char*)); /* array of strings/tokens */
-    	char *token; /* temp store for token/strings */
-
-	if (!tokens) /* malloc check */
-	{
-		writeStringToStderr("Allocation error\n");
-		exit(EXIT_FAILURE);
-	}
-
-	token = strtok(line, DELIMITERS); /* get first token */
-	while (token != NULL) /* check if there are any remaining tokens */
-	{
-		tokens[position] = token; /* populate array of strings/tokens with tokens/strings */
-		position++; /* traverse array of strings/tokens */
-
-		if (position >= bufsize) /* if memory exceeded use realloc to expand memeory */
-		{
-			bufsize += MAX_ARGS;
-			tokens = my_realloc(tokens, bufsize * sizeof(char*));
-			if (!tokens) /* realloc check */
-			{
-			writeStringToStderr("Allocation error\n");
-			exit(EXIT_FAILURE);
-			}
-		}
-
-		token = strtok(NULL, DELIMITERS); /* get subsequent tokens/strings */
-	}
-	tokens[position] = NULL; /* add NULL at end of array of tokens/strings */
-	return (tokens);
-}
-
-/* execute command if it exists */
-
-
-char** check_PATH(char **args) 
-{
-	/* pid_t pid; */ /* to check if parent or child process running */
-	/* int status; */ /* stores child process status in waitpid() */
 	int i = 0; /* traverse array of PATH directories */
 	char **path = get_path_directories(); /* array of PATH directories */
+
+	/* print_string_array(path); */
 
 	while (path[i] != NULL) /* check if we have run out of PATH directories */
 	{
@@ -63,6 +21,7 @@ char** check_PATH(char **args)
 
 		if (access(command_path, X_OK) == 0) /* check if command exists */
 		{
+			// printf("\n\tcommand: %s, exists in %s directory as: %s\n", args[0], path[i], command_path);
 			args[0] = command_path;
 			return (args);
 		}	
