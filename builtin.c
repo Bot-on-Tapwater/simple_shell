@@ -1,5 +1,10 @@
 #include "shell.h"
 
+/**
+ * execute_builtins - handles env and exit builtin functions
+ * @token: tokenized commands
+ * @env: contains values of environ
+ */
 void execute_builtins(char *token, char **env)
 {
 	size_t len;
