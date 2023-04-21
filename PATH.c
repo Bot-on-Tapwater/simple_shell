@@ -1,35 +1,100 @@
 #include "shell.h"
 
-char** check_PATH(char **args)
+void free_list(LL *head)
 {
-	int i = 0; /* traverse array of PATH directories */
-	char **path = get_path_directories(); /* array of PATH directories */
+    LL *temp;
 
-	/* print_string_array(path); */
+    while (head != NULL)
+    {
+        temp = head; /* store current head */
+        head = head->next; /* move to next node */
+        free(temp->str); /* free string */
+        free(temp); /* free node */
+    }
+}
 
-	while (path[i] != NULL) /* check if we have run out of PATH directories */
+
+void add_node(LL **head_ref, char *str)
+{
+    LL *new_node = (LL *)malloc(sizeof(LL)); /* allocate memory for new node */
+    new_node->str = str; /* assign string to new node */
+    new_node->next = *head_ref; /* make the new node point to the current head */
+
+    *head_ref = new_node; /* make the new node the new head */
+}
+
+LL *path_list(void)
+{
+	LL *head = NULL;
+	char *path = getenv("PATH");
+	char *path_copy = my_strdup(path);
+
+	if (!path_copy)
 	{
-		char *command_path; /* stores full PATH to shell commands */		
+		perror("malloc failure");
+		return (NULL);
+	}
 
-		if (access(args[0], X_OK) == 0) /* check if command entered is full PATH or shorthand version (ls OR /bin/ls)*/
+	char *token = strtok(path_copy, ":");
+	while (token != NULL)
+	{
+		LL *node = malloc(sizeof(LL));
+		if (!node)
 		{
-			/* if full PATH, proceed to execute with execve */
-			return (args);
+			perror("malloc failure");
+			free_list(head);
+			free(path_copy);
+			return NULL;
 		}
 
-		command_path = concatenateStrings(concatenateStrings(path[i], "/"), args[0]);
+		node->str = my_strdup(token);
+		node->next = head;
+		head = node;
 
-		if (access(command_path, X_OK) == 0) /* check if command exists */
-		{
-			// printf("\n\tcommand: %s, exists in %s directory as: %s\n", args[0], path[i], command_path);
-			args[0] = command_path;
-			return (args);
-		}	
-		i++;
+		token = strtok(NULL, ":");
 	}
-	writeStringToStderr(concatenateStrings(args[0], ": command not found\n"));
-	return (0);
+
+	free(path_copy);
+
+	return (head);
 }
+
+char *find_executable(char *command, LL *path_list)
+{
+    char *executable_path = NULL;
+    char *path = NULL;
+    int command_len = getStringLength(command);
+
+    while (path_list != NULL)
+    {
+        path = path_list->str;
+        int path_len = getStringLength(path);
+        int new_len = path_len + command_len + 2; /* +2 for the "/" and the null terminator */
+        char *new_path = malloc(new_len * sizeof(char));
+        if (new_path == NULL)
+        {
+            perror("malloc error");
+            exit(1);
+        }
+
+	myStrcpy(new_path, path);
+	myStrcat(new_path, "/");
+	myStrcat(new_path, command);
+
+
+        if (access(new_path, X_OK) == 0) /* check if the file exists and is executable */
+        {
+            executable_path = new_path;
+            break;
+        }
+
+        free(new_path); /* the file does not exist, so we free the memory */
+        path_list = path_list->next;
+    }
+
+    return (executable_path);
+}
+
 
 
 /* gets the value stored in specified variable name */
@@ -52,33 +117,6 @@ char *_getenv(const char *name)
 	return (NULL);
 }
 
-/* gets a list of directories in PATH variable */
-char **get_path_directories(void)
-{
-	char *path_var = _getenv("PATH"); /* stores a string of PATH directories separated by ":" */
-	char **path = NULL; /* array of PATH directories */
-	char *dir; /* temp store for strings/tokens */
-	int i = 0; /* traverse through path (array of path directories) */
-
-	if (path_var == NULL) /* check if PATH variable was obtained */
-	{
-		writeStringToStderr("PATH variable not set\n");
-		exit(EXIT_FAILURE);
-	}
-
-	path = malloc((MAX_PATH + 1) * sizeof(char *)); /* allocate memory for path array */
-
-	dir = strtok(path_var, ":"); /* get first token/string */
-
-	while (dir != NULL && i < MAX_PATH) 
-	{
-		path[i++] = dir; /* populate array of path directories */
-		dir = strtok(NULL, ":"); /* get subsequent path directories */
-	}
-	path[i] = NULL; /* add terminating NULL pointer */
-
-	return (path);
-}
 
 
 

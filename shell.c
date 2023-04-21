@@ -2,7 +2,6 @@
 
 /* function declarations */
 
-
 int main(void)
 {
 	char *input = NULL;         /* buffer to store user input */
@@ -13,13 +12,9 @@ int main(void)
 	{
 		if (isatty(0))
 		{
-			/* printf("\nStep 1: interactive\n"); */
-
 			write(STDOUT_FILENO, "#cisfun$ ", 9);   /* displays prompt */
 		}
 		input = read_input(); /* read user input */
-		// printf("\nStep 1: get user input\n");
-		// printf("\n\tuser input: %s\n", input);
 		if (input == NULL) /* end of file */
 		{
 			if (isatty(0))
@@ -29,9 +24,7 @@ int main(void)
 			free(input);
 			exit(0);
 		}
-		num_tokens = tokenize(input, tokens, MAX_NUM_TOKENS); /* tokenize user input */
-		// printf("\nStep 2: tokenize input\n");
-		// print_string_array(tokens);
+		num_tokens = tokenize(input, tokens, MAX_NUM_TOKENS);
 		if (num_tokens > 0) /* only true if at least one string is entered */
 		{
 			execute(tokens); /* execute user command */
@@ -57,40 +50,63 @@ int tokenize(char *input, char **tokens, int max_tokens)
 	return (num_tokens); /* number of tokens/strings */
 }
 
+/* checks whether the command is a built in or located in PATH */
+char* command_checker(char *command)
+{
+	char *path;
+	LL *pathLL;
+
+	if (my_strcmp(command, "exit") == 0 || my_strcmp(command, "env") == 0) /* check if command is built in */
+	{
+		execute_builtins(command, environ);
+		return (NULL);
+	}
+
+	else if (access(command, X_OK) == 0) /* check if command entered is full PATH or shorthand version (ls OR /bin/ls)*/
+	{
+		/* if full PATH, proceed to execute with execve */
+		path = command;
+		return (path);
+	}
+	else if (access(command, X_OK) != 0)
+	{
+		pathLL = path_list();
+		path = find_executable(command, pathLL);
+
+		if (path == NULL)
+		{
+			writeStringToStderr(concatenateStrings(command, ": command not found\n"));
+		}
+		return (path);
+	}
+
+}
+
 /* execute function creates a child process using fork() and executes the user command using execve() */
 void execute(char **tokens)
 {
 	pid_t pid;
-	/* char **env = environ; */
+	char *path = command_checker(tokens[0]);
 
-	if (my_strcmp(tokens[0], "exit") == 0 || my_strcmp(tokens[0], "env") == 0) /* check if command is built in */
+	if (path == NULL)
 	{
-		execute_builtins(tokens[0], environ);
+		return;
 	}
-	else
+
+	pid = fork(); /* create child process using fork since we are about to call execve() */
+	if (pid == 0) /* fork() is 0 for child process thus pid == 0 if it's a child process */
 	{
-		pid = fork(); /* create child process using fork since we are about to call execve() */
-		if (pid == 0) /* fork() is 0 for child process thus pid == 0 if it's a child process */
-		{
-			// printf("\nStep 3: Check if command exists in PATH directories \n");
-			tokens = check_PATH(tokens);
-			// printf("\nStep 4: Update your array of tokens");
-			// print_string_array(tokens);
-
-			/* print_string_array(tokens); */
-
-			execve(tokens[0], tokens, environ); /* execute commands using execve() */
-			perror("execve failure"); /* only execeutes if execve fails */
-			exit(1); /* only execeutes if execve fails */
-		}
-		else if (pid > 0) /* fork() is > 0 for parent process thus pid > 0 */
-		{
-			wait(NULL); /* since it's parent process, ask it to wait for child process to complete using wait */
-		}
-		else /* only true if fork() fails pid == -1 */
-		{
-			perror("fork failed");
-			exit(1);
-		}
+		execve(path, tokens, environ); /* execute commands using execve() */
+		perror("execve failure"); /* only execeutes if execve fails */
+		exit(1); /* only execeutes if execve fails */
+	}
+	else if (pid > 0) /* fork() is > 0 for parent process thus pid > 0 */
+	{
+		wait(NULL); /* since it's parent process, ask it to wait for child process to complete using wait */
+	}
+	else /* only true if fork() fails pid == -1 */
+	{
+		perror("fork failed");
+		exit(1);
 	}
 }

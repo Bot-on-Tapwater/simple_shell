@@ -67,3 +67,13 @@ int myStrncmp(const char *s1, const char *s2, size_t n)
 	}
 	return (0);
 }
+
+char *my_strdup(const char *str)
+{
+    size_t len = strlen(str) + 1;
+    char *new_str = malloc(len);
+    if (new_str == NULL)
+        return NULL;
+    memcpy(new_str, str, len);
+    return new_str;
+}
