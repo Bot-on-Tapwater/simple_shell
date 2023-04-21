@@ -51,31 +51,36 @@ int tokenize(char *input, char **tokens, int max_tokens)
 }
 
 /* checks whether the command is a built in or located in PATH */
-char* command_checker(char *command)
+char* command_checker(char **tokens)
 {
 	char *path;
 	LL *pathLL;
-
-	if (my_strcmp(command, "exit") == 0 || my_strcmp(command, "env") == 0) /* check if command is built in */
+	char *builtins[6] = {"exit", "env", "cd", "unsetenv", "setenv", NULL};
+	int i;	
+		
+	for(i = 0; builtins[i]; i++)
 	{
-		execute_builtins(command, environ);
-		return (NULL);
+		if (my_strcmp(tokens[0], builtins[i]) == 0)
+		{
+			execute_builtins(tokens, environ);
+			return (NULL);	
+		}
 	}
 
-	else if (access(command, X_OK) == 0) /* check if command entered is full PATH or shorthand version (ls OR /bin/ls)*/
+	if (access(tokens[0], X_OK) == 0) /* check if command entered is full PATH or shorthand version (ls OR /bin/ls)*/
 	{
 		/* if full PATH, proceed to execute with execve */
-		path = command;
+		path = tokens[0];
 		return (path);
 	}
-	else if (access(command, X_OK) != 0)
+	else if (access(tokens[0], X_OK) != 0)
 	{
 		pathLL = path_list();
-		path = find_executable(command, pathLL);
+		path = find_executable(tokens[0], pathLL);
 
 		if (path == NULL)
 		{
-			writeStringToStderr(concatenateStrings(command, ": command not found\n"));
+			writeStringToStderr(concatenateStrings(tokens[0], ": command not found\n"));
 		}
 		return (path);
 	}
@@ -86,7 +91,7 @@ char* command_checker(char *command)
 void execute(char **tokens)
 {
 	pid_t pid;
-	char *path = command_checker(tokens[0]);
+	char *path = command_checker(tokens);
 
 	if (path == NULL)
 	{

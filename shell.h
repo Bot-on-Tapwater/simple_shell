@@ -27,7 +27,7 @@ typedef struct linkedList
 } LL;
 
 /* char *read_input(void); */
-char* command_checker(char *command);
+char* command_checker(char **tokens);
 char **parse_input(char *line);
 int execute_command(char **args, char *path[]);
 void printString(char *str);
@@ -46,7 +46,7 @@ char *read_input(void);
 int tokenize(char *input, char **tokens, int max_tokens);
 void execute(char **tokens);
 int my_strcmp(const char *str1, const char *str2);
-void execute_builtins(char *token, char **env);
+void execute_builtins(char **tokens, char **env);
 char * str_dup(char *str);
 char* get_PATH(char *args);
 void print_strings(char **strings);
