@@ -61,4 +61,8 @@ void print_list(LL *head);
 char *find_executable(char *command, LL *path_list);
 char *my_strdup(const char *str);
 
+void execute_exit(char **tokens);
+void execute_env(char **tokens, char **env);
+void execute_cd(char **tokens);
+
 #endif
