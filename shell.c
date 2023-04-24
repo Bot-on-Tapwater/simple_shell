@@ -1,7 +1,8 @@
 #include "shell.h"
-
-/* function declarations */
-
+/**
+ * main - Entry point og the program
+ * Return: 0 on success
+ */
 int main(void)
 {
 	char *input = NULL;         /* buffer to store user input */
@@ -34,7 +35,13 @@ int main(void)
 	return (0);
 }
 
-/* tokenize function breaks a string into tokens using strtok() function */
+/**
+ * tokenize - breaks a string into tokens using strtok() function
+ * @input: input string that needs to be tokenized.
+ * @tokens: array that will hold the resulting tokens
+ * @max_tokens: max no of tokens that can be extracted from the input string
+ * Return: number of tokens
+ */
 int tokenize(char *input, char **tokens, int max_tokens)
 {
 	int num_tokens = 0;
@@ -46,28 +53,34 @@ int tokenize(char *input, char **tokens, int max_tokens)
 		num_tokens++; /* move to next index in "tokens" array */
 		token = strtok(NULL, " \n"); /* gets subsequent tokens/strings */
 	}
-	tokens[num_tokens] = NULL; /* tokens array has to end with NULL, because of execve() function */
+	tokens[num_tokens] = NULL; /* tokens array has to end with NULL*/
+	/*execve() works with null terminated strings */
 	return (num_tokens); /* number of tokens/strings */
 }
 
-/* checks whether the command is a built in or located in PATH */
-char* command_checker(char **tokens)
+/**
+ * command_checker - checks if the command is a built in or located in PATH
+ * @tokens: a pointer to the commands
+ * Return: path of the command
+ */
+char *command_checker(char **tokens)
 {
 	char *path;
 	LL *pathLL;
 	char *builtins[6] = {"exit", "env", "cd", "unsetenv", "setenv", NULL};
-	int i;	
-		
-	for(i = 0; builtins[i]; i++)
+	int i;
+
+	for (i = 0; builtins[i]; i++)
 	{
 		if (my_strcmp(tokens[0], builtins[i]) == 0)
 		{
 			execute_builtins(tokens, environ);
-			return (NULL);	
+			return (NULL);
 		}
 	}
-
-	if (access(tokens[0], X_OK) == 0) /* check if command entered is full PATH or shorthand version (ls OR /bin/ls)*/
+	if (access(tokens[0], X_OK) == 0)
+	/* check if command is full PATH or shorthand version*/
+	/*(ls OR /bin/ls)*/
 	{
 		/* if full PATH, proceed to execute with execve */
 		path = tokens[0];
@@ -82,12 +95,18 @@ char* command_checker(char **tokens)
 		{
 			writeStringToStderr(concatenateStrings(tokens[0], ": command not found\n"));
 		}
-		return (path);
+		else
+		{
+			return (path);
+		}
 	}
-
+	return (NULL);
 }
 
-/* execute function creates a child process using fork() and executes the user command using execve() */
+/**
+ * execute - creates a child process using fork() and executes command
+ * @tokens: commands executed
+ */
 void execute(char **tokens)
 {
 	pid_t pid;
@@ -98,8 +117,8 @@ void execute(char **tokens)
 		return;
 	}
 
-	pid = fork(); /* create child process using fork since we are about to call execve() */
-	if (pid == 0) /* fork() is 0 for child process thus pid == 0 if it's a child process */
+	pid = fork(); /* create child process using fork before calling execve()*/
+	if (pid == 0) /* if pid == 0 execute child process */
 	{
 		execve(path, tokens, environ); /* execute commands using execve() */
 		perror("execve failure"); /* only execeutes if execve fails */
@@ -107,7 +126,8 @@ void execute(char **tokens)
 	}
 	else if (pid > 0) /* fork() is > 0 for parent process thus pid > 0 */
 	{
-		wait(NULL); /* since it's parent process, ask it to wait for child process to complete using wait */
+		wait(NULL);
+		/*it's parent process, ask it to wait for child process to complete*/
 	}
 	else /* only true if fork() fails pid == -1 */
 	{

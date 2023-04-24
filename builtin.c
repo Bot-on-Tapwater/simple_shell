@@ -8,6 +8,7 @@
 void execute_builtins(char **tokens, char **env)
 {
 	size_t len;
+	char *cwd;
 
 	if (my_strcmp(tokens[0], "exit") == 0) /* check if command is "exit" */
 	{
@@ -53,7 +54,7 @@ void execute_builtins(char **tokens, char **env)
 			path = tokens[1]; /* use the given path */
 		}
 		
-		char *cwd = getcwd(NULL, 0);
+		cwd = getcwd(NULL, 0);
 		if (cwd == NULL)
 		{
 			write(STDERR_FILENO, "cd: getcwd failed\n", getStringLength("cd: getcwd failed\n"));

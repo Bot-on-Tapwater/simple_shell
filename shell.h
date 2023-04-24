@@ -19,7 +19,11 @@
 #define DELIMITERS " \t\r\n\a"
 
 extern char **environ;
-
+/**
+ * struct linkedList - path linked list
+ * @str: path directories
+ * @next: pointer to the next node
+ */
 typedef struct linkedList
 {
 	char *str;
@@ -27,7 +31,7 @@ typedef struct linkedList
 } LL;
 
 /* char *read_input(void); */
-char* command_checker(char **tokens);
+char *command_checker(char **tokens);
 char **parse_input(char *line);
 int execute_command(char **args, char *path[]);
 void printString(char *str);
@@ -47,8 +51,8 @@ int tokenize(char *input, char **tokens, int max_tokens);
 void execute(char **tokens);
 int my_strcmp(const char *str1, const char *str2);
 void execute_builtins(char **tokens, char **env);
-char * str_dup(char *str);
-char* get_PATH(char *args);
+char *str_dup(char *str);
+char *get_PATH(char *args);
 void print_strings(char **strings);
 LL *path_list();
 void add_node(LL **head_ref, char *str);

@@ -1,13 +1,17 @@
 #include "shell.h"
-
-/* joins two strings together */
-char* concatenateStrings(char *str1, char *str2) 
+/**
+ * concatenateStrings - joins two strings together
+ * @str1: string concetenated
+ * @str2: string joined to str1
+ * Return: str1 and str2 combined
+ */
+char *concatenateStrings(char *str1, char *str2)
 {
 	int len1 = getStringLength(str1);
 	int len2 = getStringLength(str2);
 	char *result = malloc(len1 + len2 + 1); /* add one for null terminator */
 
-	if (result == NULL) 
+	if (result == NULL)
 	{
 		perror("Failed to allocate memory for concatenated string");
 		exit(1);
@@ -17,12 +21,17 @@ char* concatenateStrings(char *str1, char *str2)
 	return (result);
 }
 
-/* copies contents of one string to another string */
-char* myStrcpy(char *dest, const char *src) 
+/**
+ * myStrcpy - copies contents of one string to another string
+ * @dest: copying destination
+ * @src: string copied
+ * Return: string copied
+ */
+char *myStrcpy(char *dest, const char *src)
 {
 	char *originalDest = dest; /* save the original pointer to dest */
 
-	while (*src != '\0') 
+	while (*src != '\0')
 	{
 		*dest = *src;
 		dest++;
@@ -32,16 +41,21 @@ char* myStrcpy(char *dest, const char *src)
 	return (originalDest);
 }
 
-/* concatenates two strings */
-char* myStrcat(char *dest, const char *src) 
+/**
+ * myStrcat - concatenates two strings
+ * @dest: destiation
+ * @src: string constant
+ * Return: joined string
+ */
+char *myStrcat(char *dest, const char *src)
 {
-	char *originalDest = dest; /* save the original pointer to dest */
-	
-	while (*dest != '\0') 
+	char *originalDest = dest;/* save the original pointer to dest */
+
+	while (*dest != '\0')
 	{
 		dest++;
 	}
-	while (*src != '\0') 
+	while (*src != '\0')
 	{
 		*dest = *src;
 		dest++;
@@ -51,14 +65,20 @@ char* myStrcat(char *dest, const char *src)
 	return (originalDest);
 }
 
-/* compares two strings, checks if they are equal */
-int myStrncmp(const char *s1, const char *s2, size_t n) 
+/**
+ * myStrncmp - compares two strings, checks if they are equal
+ * @s1: string one compared
+ * @s2: string compared with string one
+ * @n: compares the first n characters of s1 and s2.
+ * Return: 0 on sucess
+ */
+int myStrncmp(const char *s1, const char *s2, size_t n)
 {
 	size_t i;
 
-	for (i = 0; i < n; i++) 
+	for (i = 0; i < n; i++)
 	{
-		if (*s1 == '\0' || *s1 != *s2) 
+		if (*s1 == '\0' || *s1 != *s2)
 		{
 			return (*s1 - *s2);
 		}
@@ -67,13 +87,18 @@ int myStrncmp(const char *s1, const char *s2, size_t n)
 	}
 	return (0);
 }
-
+/**
+ * my_strdup - copies the contents of the input string str to the new memory
+ * @str: string copied
+ * Return: a pointer to the new string.
+ */
 char *my_strdup(const char *str)
 {
-    size_t len = strlen(str) + 1;
-    char *new_str = malloc(len);
-    if (new_str == NULL)
-        return NULL;
-    memcpy(new_str, str, len);
-    return new_str;
+	size_t len = strlen(str) + 1;
+	char *new_str = malloc(len);
+
+	if (new_str == NULL)
+		return (NULL);
+	memcpy(new_str, str, len);
+	return (new_str);
 }
