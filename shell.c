@@ -25,10 +25,18 @@ int main(void)
 			free(input);
 			exit(0);
 		}
-		num_tokens = tokenize(input, tokens, MAX_NUM_TOKENS);
-		if (num_tokens > 0) /* only true if at least one string is entered */
+
+		if (custom_strchr(input, ';') != NULL) /* ; separator found */
 		{
-			execute(tokens); /* execute user command */
+			handle_semicolon(input);
+		}
+		else
+		{
+			num_tokens = tokenize(input, tokens, MAX_NUM_TOKENS);
+			if (num_tokens > 0) /* only true if at least one string is entered */
+			{
+				execute(tokens); /* execute user command */
+			}
 		}
 		free(input); /* free resources */
 	}
@@ -36,7 +44,7 @@ int main(void)
 }
 
 /**
- * tokenize - breaks a string into tokens using strtok() function
+ * tokenize - breaks a string into tokens using my_strtok() function
  * @input: input string that needs to be tokenized.
  * @tokens: array that will hold the resulting tokens
  * @max_tokens: max no of tokens that can be extracted from the input string
@@ -45,13 +53,13 @@ int main(void)
 int tokenize(char *input, char **tokens, int max_tokens)
 {
 	int num_tokens = 0;
-	char *token = strtok(input, " \n"); /* get first token/string */
+	char *token = my_strtok(input, " \n"); /* get first token/string */
 
 	while (token != NULL && num_tokens < max_tokens)
 	{
 		tokens[num_tokens] = token; /* populate "tokens" array with strings */
 		num_tokens++; /* move to next index in "tokens" array */
-		token = strtok(NULL, " \n"); /* gets subsequent tokens/strings */
+		token = my_strtok(NULL, " \n"); /* gets subsequent tokens/strings */
 	}
 	tokens[num_tokens] = NULL; /* tokens array has to end with NULL*/
 	/*execve() works with null terminated strings */
@@ -93,7 +101,7 @@ char *command_checker(char **tokens)
 
 		if (path == NULL)
 		{
-			writeStringToStderr(concatenateStrings(tokens[0], ": command not found\n"));
+			writeStringToStderr(myStrcat(tokens[0], ": command not found\n"));
 		}
 		else
 		{

@@ -9,6 +9,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <errno.h>
 
 #define MAX_INPUT_SIZE 1024
 #define MAX_TOKEN_SIZE 64
@@ -62,7 +63,25 @@ char *find_executable(char *command, LL *path_list);
 char *my_strdup(const char *str);
 
 void execute_exit(char **tokens);
-void execute_env(char **tokens, char **env);
+void execute_env(char **env);
 void execute_cd(char **tokens);
+
+ssize_t my_getline(char **lineptr, size_t *n, int fd);
+char *expand_buffer(char *buf, size_t buf_size);
+char *allocate_buffer(size_t buf_size);
+unsigned int is_delim(char c, char *delim);
+char *my_strtok(char *srcString, char *delim);
+int is_empty_line(ssize_t len, char *buf);
+int handle_empty_line(char *buf, char **lineptr);
+void terminate_buffer(ssize_t len, char *buf);
+int custom_setenv(const char *name, const char *value, int overwrite);
+int custom_unsetenv(const char *name);
+int custom_putenv(char *str);
+char *custom_strchr(const char *str, int c);
+int custom_environSize(void);
+int shell_setenv(char **args);
+int shell_unsetenv(char **args);
+void handle_semicolon(char *input);
+int delim_tokenize(char *input, char **tokens, int max_tokens, char *delim);
 
 #endif
