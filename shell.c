@@ -1,20 +1,8 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/wait.h>
-
-#define MAX_INPUT_SIZE 1024     /* IGNORE FOR NOW */
-#define MAX_TOKEN_SIZE 64       /* IGNORE FOR NOW */
-#define MAX_NUM_TOKENS 64       /* max number of whitespace/" " separated strings a user can enter */
-
-extern char **environ;
-
-/* function declarations */
-char *read_input();
-int tokenize(char *input, char **tokens, int max_tokens);
-void execute(char **tokens);
-
+#include "shell.h"
+/**
+ * main - Entry point og the program
+ * Return: 0 on success
+ */
 int main(void)
 {
 	char *input = NULL;         /* buffer to store user input */
@@ -37,120 +25,121 @@ int main(void)
 			free(input);
 			exit(0);
 		}
-		num_tokens = tokenize(input, tokens, MAX_NUM_TOKENS); /* tokenize user input */
-		if (num_tokens > 0) /* only true if at least one string is entered */
+
+		if (custom_strchr(input, ';') != NULL) /* ; separator found */
 		{
-			execute(tokens); /* execute user command */
+			handle_semicolon(input);
+		}
+		else
+		{
+			num_tokens = tokenize(input, tokens, MAX_NUM_TOKENS);
+			if (num_tokens > 0) /* only true if at least one string is entered */
+			{
+				execute(tokens); /* execute user command */
+			}
 		}
 		free(input); /* free resources */
 	}
 	return (0);
 }
 
-/* read_input function reads user input from stdin using getline() function */
-char *read_input()
-{
-	char *input = NULL;
-	size_t input_size = 0;
-	if (getline(&input, &input_size, stdin) == -1)
-	{
-		return (NULL); /* end of file */
-	}
-	return (input);
-}
-
-/* tokenize function breaks a string into tokens using strtok() function */
+/**
+ * tokenize - breaks a string into tokens using my_strtok() function
+ * @input: input string that needs to be tokenized.
+ * @tokens: array that will hold the resulting tokens
+ * @max_tokens: max no of tokens that can be extracted from the input string
+ * Return: number of tokens
+ */
 int tokenize(char *input, char **tokens, int max_tokens)
 {
 	int num_tokens = 0;
-	char *token = strtok(input, " \n"); /* get first token/string */
+	char *token = my_strtok(input, " \n"); /* get first token/string */
 
 	while (token != NULL && num_tokens < max_tokens)
 	{
 		tokens[num_tokens] = token; /* populate "tokens" array with strings */
 		num_tokens++; /* move to next index in "tokens" array */
-		token = strtok(NULL, " \n"); /* gets subsequent tokens/strings */
+		token = my_strtok(NULL, " \n"); /* gets subsequent tokens/strings */
 	}
-	tokens[num_tokens] = NULL; /* tokens array has to end with NULL, because of execve() function */
+	tokens[num_tokens] = NULL; /* tokens array has to end with NULL*/
+	/*execve() works with null terminated strings */
 	return (num_tokens); /* number of tokens/strings */
 }
 
-/* execute function creates a child process using fork() and executes the user command using execve() */
+/**
+ * command_checker - checks if the command is a built in or located in PATH
+ * @tokens: a pointer to the commands
+ * Return: path of the command
+ */
+char *command_checker(char **tokens)
+{
+	char *path;
+	LL *pathLL;
+	char *builtins[6] = {"exit", "env", "cd", "unsetenv", "setenv", NULL};
+	int i;
+
+	for (i = 0; builtins[i]; i++)
+	{
+		if (my_strcmp(tokens[0], builtins[i]) == 0)
+		{
+			execute_builtins(tokens, environ);
+			return (NULL);
+		}
+	}
+	if (access(tokens[0], X_OK) == 0)
+	/* check if command is full PATH or shorthand version*/
+	/*(ls OR /bin/ls)*/
+	{
+		/* if full PATH, proceed to execute with execve */
+		path = tokens[0];
+		return (path);
+	}
+	else if (access(tokens[0], X_OK) != 0)
+	{
+		pathLL = path_list();
+		path = find_executable(tokens[0], pathLL);
+
+		if (path == NULL)
+		{
+			writeStringToStderr(myStrcat(tokens[0], ": command not found\n"));
+		}
+		else
+		{
+			return (path);
+		}
+	}
+	return (NULL);
+}
+
+/**
+ * execute - creates a child process using fork() and executes command
+ * @tokens: commands executed
+ */
 void execute(char **tokens)
 {
 	pid_t pid;
-	char **env = environ;
-	size_t len;
-	
-	if (strcmp(tokens[0], "exit") == 0) /* check if command is "exit" */
+	char *path = command_checker(tokens);
+
+	if (path == NULL)
 	{
-		if (tokens[1] != NULL) /* check if there is an argument provided */
-		{
-			int status = atoi(tokens[1]); /* convert argument to integer */
-			exit(status); /* exit shell with provided status */
-		}
-		else
-		{
-			exit(0); /* exit the shell with default status 0 */
-		}
+		return;
 	}
-	else if 
-		(strcmp(tokens[0], "env") == 0) /* env built-in command */
-		{
-			while (*env != NULL)
-			{
-				len = strlen(*env);
-				write(STDOUT_FILENO, *env, len);
-				write(STDOUT_FILENO, "\n", 1);
-				env++;
-			}
-		}
-	else if 
-		(strcmp(tokens[0], "setenv") == 0) /* setenv built-in command */
-		{
-			if (tokens[1] == NULL || tokens[2] == NULL)
-			{
-				write(STDERR_FILENO, "setenv: invalid arguments\n", strlen("setenv: invalid arguments\n"));
-			}
-			else
-			{
-				if (setenv(tokens[1], tokens[2], 1) != 0) /* set environment variable */
-				{
-					write(STDERR_FILENO, "setenv: failed to set variable\n", strlen("setenv: failed to set variable\n"));
-				}
-			}
-		}
-	else if (strcmp(tokens[0], "unsetenv") == 0) /* unsetenv built-in command */
+
+	pid = fork(); /* create child process using fork before calling execve()*/
+	if (pid == 0) /* if pid == 0 execute child process */
 	{
-		if (tokens[1] == NULL)
-		{
-			write(STDERR_FILENO, "unsetenv: invalid arguments\n", strlen("unsetenv: invalid arguments\n"));
-		}
-		else
-		{
-			if (unsetenv(tokens[1]) != 0) /* unset environment variable */
-			{
-				write(STDERR_FILENO, "unsetenv: failed to unset variable\n", strlen("unsetenv: failed to unset variable\n"));
-			}
-		}
+		execve(path, tokens, environ); /* execute commands using execve() */
+		perror("execve failure"); /* only execeutes if execve fails */
+		exit(1); /* only execeutes if execve fails */
 	}
-	else
+	else if (pid > 0) /* fork() is > 0 for parent process thus pid > 0 */
 	{
-		pid = fork(); /* create child process using fork since we are about to call execve() */
-		if (pid == 0) /* fork() is 0 for child process thus pid == 0 if it's a child process */
-		{
-			execve(tokens[0], tokens, environ); /* execute commands using execve() */
-			perror("execve failure"); /* only execeutes if execve fails */
-			exit(1); /* only execeutes if execve fails */
-		}
-		else if (pid > 0) /* fork() is > 0 for parent process thus pid > 0 */
-		{
-			wait(NULL); /* since it's parent process, ask it to wait for child process to complete using wait */
-		}
-		else /* only true if fork() fails pid == -1 */
-		{
-			perror("fork failed");
-			exit(1);
-		}
+		wait(NULL);
+		/*it's parent process, ask it to wait for child process to complete*/
+	}
+	else /* only true if fork() fails pid == -1 */
+	{
+		perror("fork failed");
+		exit(1);
 	}
 }
