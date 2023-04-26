@@ -107,28 +107,4 @@ char *find_executable(char *command, LL *path_list)
 	}
 	return (executable_path);
 }
-/**
- * _getenv - gets the value stored in specified variable name
- * @name: Variable name
- * Return: values stored in the variable
- */
-char *_getenv(const char *name)
-{
-	int i, len; /* i is used to traverse environ global variable */
-	char *env_val; /* string to store value of variable name e.g PATH="env_val" */
 
-	len = getStringLength(name); /* length of variable name e.g ("PATH" = 4)*/
-
-	for (i = 0; environ[i] != NULL; i++)
-	{
-		if (myStrncmp(name, environ[i], len) == 0 && environ[i][len] == '=')
-		/* if match found */
-		{
-			env_val = &environ[i][len + 1];
-		/* store value string  in env_val variable */
-			return (env_val);
-		}
-	}
-
-	return (NULL);
-}

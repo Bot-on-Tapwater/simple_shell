@@ -15,19 +15,5 @@ void execute_builtins(char **tokens, char **env)
 	{
 		execute_env(env);
 	}
-
-	else if (my_strcmp(tokens[0], "cd") == 0) /* cd built-in command */
-	{
-		execute_cd(tokens);
-	}
-
-	else if (my_strcmp(tokens[0], "setenv") == 0) /* env built-in command */
-	{
-		shell_setenv(tokens);
-	}
-	else if (my_strcmp(tokens[0], "unsetenv") == 0) /* env built-in command */
-	{
-		shell_unsetenv(tokens);
-	}
 }
 

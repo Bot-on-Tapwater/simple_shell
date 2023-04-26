@@ -1,9 +1,13 @@
 #include "shell.h"
 /**
  * main - Entry point og the program
+ * @argv: argv
+ * @argc: argc
+ * @env: env
  * Return: 0 on success
  */
-int main(void)
+int main(__attribute__((unused)) int argc, __attribute__((unused
+)) char **argv, char **env)
 {
 	char *input = NULL;         /* buffer to store user input */
 	char *tokens[MAX_NUM_TOKENS];   /* array of tokens/strings */
@@ -26,17 +30,10 @@ int main(void)
 			exit(0);
 		}
 
-		if (custom_strchr(input, ';') != NULL) /* ; separator found */
+		num_tokens = tokenize(input, tokens, MAX_NUM_TOKENS);
+		if (num_tokens > 0) /* only true if at least one string is entered */
 		{
-			handle_semicolon(input);
-		}
-		else
-		{
-			num_tokens = tokenize(input, tokens, MAX_NUM_TOKENS);
-			if (num_tokens > 0) /* only true if at least one string is entered */
-			{
-				execute(tokens); /* execute user command */
-			}
+			execute(tokens, env); /* execute user command */
 		}
 		free(input); /* free resources */
 	}
@@ -69,9 +66,10 @@ int tokenize(char *input, char **tokens, int max_tokens)
 /**
  * command_checker - checks if the command is a built in or located in PATH
  * @tokens: a pointer to the commands
+ * @env: env
  * Return: path of the command
  */
-char *command_checker(char **tokens)
+char *command_checker(char **tokens, char **env)
 {
 	char *path;
 	LL *pathLL;
@@ -82,7 +80,7 @@ char *command_checker(char **tokens)
 	{
 		if (my_strcmp(tokens[0], builtins[i]) == 0)
 		{
-			execute_builtins(tokens, environ);
+			execute_builtins(tokens, env);
 			return (NULL);
 		}
 	}
@@ -114,11 +112,12 @@ char *command_checker(char **tokens)
 /**
  * execute - creates a child process using fork() and executes command
  * @tokens: commands executed
+ * @env: env
  */
-void execute(char **tokens)
+void execute(char **tokens, char **env)
 {
 	pid_t pid;
-	char *path = command_checker(tokens);
+	char *path = command_checker(tokens, env);
 
 	if (path == NULL)
 	{
@@ -128,7 +127,7 @@ void execute(char **tokens)
 	pid = fork(); /* create child process using fork before calling execve()*/
 	if (pid == 0) /* if pid == 0 execute child process */
 	{
-		execve(path, tokens, environ); /* execute commands using execve() */
+		execve(path, tokens, env); /* execute commands using execve() */
 		perror("execve failure"); /* only execeutes if execve fails */
 		exit(1); /* only execeutes if execve fails */
 	}
