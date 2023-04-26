@@ -25,18 +25,10 @@ int main(void)
 			free(input);
 			exit(0);
 		}
-
-		if (custom_strchr(input, ';') != NULL) /* ; separator found */
+		num_tokens = tokenize(input, tokens, MAX_NUM_TOKENS);
+		if (num_tokens > 0) /* only true if at least one string is entered */
 		{
-			handle_semicolon(input);
-		}
-		else
-		{
-			num_tokens = tokenize(input, tokens, MAX_NUM_TOKENS);
-			if (num_tokens > 0) /* only true if at least one string is entered */
-			{
-				execute(tokens); /* execute user command */
-			}
+			execute(tokens); /* execute user command */
 		}
 		free(input); /* free resources */
 	}
@@ -53,13 +45,13 @@ int main(void)
 int tokenize(char *input, char **tokens, int max_tokens)
 {
 	int num_tokens = 0;
-	char *token = my_strtok(input, " \n"); /* get first token/string */
+	char *token = strtok(input, " \n"); /* get first token/string */
 
 	while (token != NULL && num_tokens < max_tokens)
 	{
 		tokens[num_tokens] = token; /* populate "tokens" array with strings */
 		num_tokens++; /* move to next index in "tokens" array */
-		token = my_strtok(NULL, " \n"); /* gets subsequent tokens/strings */
+		token = strtok(NULL, " \n"); /* gets subsequent tokens/strings */
 	}
 	tokens[num_tokens] = NULL; /* tokens array has to end with NULL*/
 	/*execve() works with null terminated strings */
@@ -75,12 +67,13 @@ char *command_checker(char **tokens)
 {
 	char *path;
 	LL *pathLL;
-	char *builtins[6] = {"exit", "env", "cd", "unsetenv", "setenv", NULL};
+	char *builtins[6] = {"exit", "env", NULL};
 	int i;
+	char **environ = NULL;
 
 	for (i = 0; builtins[i]; i++)
 	{
-		if (my_strcmp(tokens[0], builtins[i]) == 0)
+		if (strcmp(tokens[0], builtins[i]) == 0)
 		{
 			execute_builtins(tokens, environ);
 			return (NULL);
@@ -101,7 +94,7 @@ char *command_checker(char **tokens)
 
 		if (path == NULL)
 		{
-			writeStringToStderr(myStrcat(tokens[0], ": command not found\n"));
+			perror("command not found\n");
 		}
 		else
 		{
@@ -119,6 +112,7 @@ void execute(char **tokens)
 {
 	pid_t pid;
 	char *path = command_checker(tokens);
+	char **environ = NULL;
 
 	if (path == NULL)
 	{

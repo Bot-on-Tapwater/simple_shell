@@ -19,7 +19,7 @@
 #define MAX_PATH 1024
 #define DELIMITERS " \t\r\n\a"
 
-extern char **environ;
+/* extern char **environ; */
 /**
  * struct linkedList - path linked list
  * @str: path directories

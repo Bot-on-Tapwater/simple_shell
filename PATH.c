@@ -36,7 +36,7 @@ LL *path_list(void)
 {
 	LL *head = NULL;
 	char *path = getenv("PATH");
-	char *path_copy = my_strdup(path);
+	char *path_copy = strdup(path);
 	LL *node;
 	char *token;
 
@@ -58,7 +58,7 @@ LL *path_list(void)
 			return (NULL);
 		}
 
-		node->str = my_strdup(token);
+		node->str = strdup(token);
 		node->next = head;
 		head = node;
 
@@ -78,7 +78,7 @@ char *find_executable(char *command, LL *path_list)
 {
 	char *executable_path = NULL;
 	char *path = NULL;
-	int command_len = getStringLength(command);
+	int command_len = strlen(command);
 	int path_len;
 	int new_len;
 	char *new_path;
@@ -86,7 +86,7 @@ char *find_executable(char *command, LL *path_list)
 	while (path_list != NULL)
 	{
 		path = path_list->str;
-		path_len = getStringLength(path);
+		path_len = strlen(path);
 		new_len = path_len + command_len + 2; /* +2 for the "/" and the '\0'*/
 		new_path = malloc(new_len * sizeof(char));
 		if (new_path == NULL)
@@ -94,9 +94,9 @@ char *find_executable(char *command, LL *path_list)
 			perror("malloc error");
 			exit(1);
 		}
-		myStrcpy(new_path, path);
-		myStrcat(new_path, "/");
-		myStrcat(new_path, command);
+		strcpy(new_path, path);
+		strcat(new_path, "/");
+		strcat(new_path, command);
 		if (access(new_path, X_OK) == 0) /*check if file exists and executable*/
 		{
 			executable_path = new_path;
@@ -106,29 +106,4 @@ char *find_executable(char *command, LL *path_list)
 		path_list = path_list->next;
 	}
 	return (executable_path);
-}
-/**
- * _getenv - gets the value stored in specified variable name
- * @name: Variable name
- * Return: values stored in the variable
- */
-char *_getenv(const char *name)
-{
-	int i, len; /* i is used to traverse environ global variable */
-	char *env_val; /* string to store value of variable name e.g PATH="env_val" */
-
-	len = getStringLength(name); /* length of variable name e.g ("PATH" = 4)*/
-
-	for (i = 0; environ[i] != NULL; i++)
-	{
-		if (myStrncmp(name, environ[i], len) == 0 && environ[i][len] == '=')
-		/* if match found */
-		{
-			env_val = &environ[i][len + 1];
-		/* store value string  in env_val variable */
-			return (env_val);
-		}
-	}
-
-	return (NULL);
 }
