@@ -19,7 +19,7 @@
 #define MAX_PATH 1024
 #define DELIMITERS " \t\r\n\a"
 
-/* extern char **environ; */
+extern char **environ;
 /**
  * struct linkedList - path linked list
  * @str: path directories
@@ -32,7 +32,7 @@ typedef struct linkedList
 } LL;
 
 /* char *read_input(void); */
-char *command_checker(char **tokens, char **env);
+char *command_checker(char **tokens);
 char **parse_input(char *line);
 int execute_command(char **args, char *path[]);
 void printString(char *str);
@@ -49,7 +49,7 @@ char **get_path_directories();
 int printenv(void);
 char *read_input(void);
 int tokenize(char *input, char **tokens, int max_tokens);
-void execute(char **tokens, char **env);
+void execute(char **tokens);
 int my_strcmp(const char *str1, const char *str2);
 void execute_builtins(char **tokens, char **env);
 char *str_dup(char *str);

@@ -51,3 +51,21 @@ void *my_realloc(void *ptr, size_t size)
 	}
 }
 
+/**
+ * printenv -  prints environment variable
+ * takes no arguments
+ * Return: 0 on success
+ */
+int printenv(void)
+{
+	int i = 0;
+
+	while ((environ[i]))
+	{
+		printString(environ[i]);
+		printString("\n");
+		i++;
+	}
+
+	return (0);
+}
