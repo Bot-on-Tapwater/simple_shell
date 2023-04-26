@@ -20,7 +20,6 @@ void execute_exit(char **tokens)
 
 /**
  * execute_env - env builtin
- * @tokens: tokenized commands
  * @env: environment variable
  */
 void execute_env(char **env)
