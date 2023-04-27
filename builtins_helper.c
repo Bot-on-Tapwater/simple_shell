@@ -47,7 +47,7 @@ void execute_cd(char **tokens)
 
 	if (tokens[1] == NULL)
 		path = getenv("HOME"); /* if no argument is given, use HOME directory */
-	else if (strcmp(tokens[1], "-") == 0)
+	else if (my_strcmp(tokens[1], "-") == 0)
 	{
 		path = getenv("OLDPWD"); /* if argument is "-", use OLDPWD directory */
 		if (path == NULL)
