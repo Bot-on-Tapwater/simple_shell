@@ -1,13 +1,21 @@
 #include "shell.h"
 /**
  * main - Entry point og the program
+ * @argc: argc
+ * @argv: argv
  * Return: 0 on success
  */
-int main(void)
+int main(int argc, char **argv)
 {
 	char *input = NULL;         /* buffer to store user input */
 	char *tokens[MAX_NUM_TOKENS];   /* array of tokens/strings */
 	int num_tokens;
+
+	if (argc > 1 && my_strcmp(argv[0], "./hsh") == 0)
+	{
+		file_input(argc, argv);
+		exit(0);
+	}
 
 	while (1)
 	{
@@ -25,17 +33,10 @@ int main(void)
 			free(input);
 			exit(0);
 		}
-		if (custom_strchr(input, ';') != NULL) /* ; separator found */
+		num_tokens = tokenize(input, tokens, MAX_NUM_TOKENS);
+		if (num_tokens > 0) /* only true if at least one string is entered */
 		{
-			handle_semicolon(input);
-		}
-		else
-		{
-			num_tokens = tokenize(input, tokens, MAX_NUM_TOKENS);
-			if (num_tokens > 0) /* only true if at least one string is entered */
-			{
-				execute(tokens); /* execute user command */
-			}
+			execute(tokens); /* execute user command */
 		}
 		free(input); /* free resources */
 	}

@@ -84,5 +84,6 @@ void shell_unsetenv(char **args);
 void handle_semicolon(char *input);
 int delim_tokenize(char *input, char **tokens, int max_tokens, char *delim);
 int logical_operators(char **tokens);
+int file_input(int argc, char **argv);
 
 #endif

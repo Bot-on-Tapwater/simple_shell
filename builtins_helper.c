@@ -62,7 +62,7 @@ int execute_cd(char **tokens)
 			perror("cd");
 		}
 	}
-	else if (strcmp(tokens[1], "-") == 0)
+	else if (my_strcmp(tokens[1], "-") == 0)
 	{
 		if (folder_prev == NULL)
 			perror("cd: OLDPWD not set\n");
