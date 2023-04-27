@@ -41,42 +41,48 @@ void execute_env(char **env)
  */
 void execute_cd(char **tokens)
 {
-	char *cwd, *path;
+	char *path;
+	char *cwd = getcwd(NULL, 0);
+
 
 	if (tokens[1] == NULL)
-		path = _getenv("HOME"); /* if no argument is given, use HOME directory */
-	else if (my_strcmp(tokens[1], "-") == 0)
+		path = getenv("HOME"); /* if no argument is given, use HOME directory */
+	else if (strcmp(tokens[1], "-") == 0)
 	{
-		path = _getenv("OLDPWD"); /* if argument is "-", use OLDPWD directory */
+		path = getenv("OLDPWD"); /* if argument is "-", use OLDPWD directory */
 		if (path == NULL)
 		{
-			perror("cd: OLDPWD not set\n");
+			write(STDERR_FILENO, "cd: OLDPWD not set\n",
+			getStringLength("cd: OLDPWD not set\n"));
 			return;
 		}
 	}
 	else
 		path = tokens[1]; /* use the given path */
-	cwd = getcwd(NULL, 0);
 	if (cwd == NULL)
 	{
-		perror("cd: getcwd failed\n");
+		write(STDERR_FILENO, "cd: getcwd failed\n",
+		getStringLength("cd: getcwd failed\n"));
 		return;
 	}
 	if (chdir(path) != 0) /* change directory */
 	{
-		perror("cd: unable to change directory\n");
+		write(STDERR_FILENO, "cd: unable to change directory\n",
+		getStringLength("cd: unable to change directory\n"));
 		free(cwd);
 		return;
 	}
-	if (custom_setenv("OLDPWD", cwd, 1) != 0)
+	if (setenv("OLDPWD", cwd, 1) != 0) /* set OLDPWD environment variable */
 	{
-		perror("cd: failed to set OLDPWD environment variable\n");
+		write(STDERR_FILENO, "cd: failed to set OLDPWD environment variable\n",
+		getStringLength("cd: failed to set OLDPWD environment variable\n"));
 		free(cwd);
 		return;
 	}
-	if (custom_setenv("PWD", getcwd(NULL, 0), 1) != 0)
+	if (setenv("PWD", getcwd(NULL, 0), 1) != 0) /* set PWD environment variable */
 	{
-		perror("cd: failed to set PWD environment variable\n");
+		write(STDERR_FILENO, "cd: failed to set PWD environment variable\n",
+		getStringLength("cd: failed to set PWD environment variable\n"));
 		free(cwd);
 		return;
 	}
