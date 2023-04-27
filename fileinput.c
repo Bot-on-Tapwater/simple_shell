@@ -16,7 +16,11 @@ int file_input(int argc, char **argv)
 
 	if (argc != 2)
 	{
-		fprintf(stderr, "Usage: %s filename\n", argv[0]);
+		char error_message[] = "Usage: ";
+
+		write(STDERR_FILENO, error_message, sizeof(error_message) - 1);
+		write(STDERR_FILENO, argv[0], strlen(argv[0]));
+		write(STDERR_FILENO, " filename\n", 10);
 		exit(1);
 	}
 
