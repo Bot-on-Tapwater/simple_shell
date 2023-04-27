@@ -53,16 +53,16 @@ void execute_env(char **env)
 int execute_cd(char **tokens)
 {
 	char *folder_new = getcwd(NULL, 0);
-	char *folder_prev = _getenv("OLDPWD");
+	char *folder_prev = getenv("OLDPWD");
 
 	if (tokens[1] == NULL)
 	{
-		if (chdir(_getenv("HOME")) != 0)
+		if (chdir(getenv("HOME")) != 0)
 		{
 			perror("cd");
 		}
 	}
-	else if (my_strcmp(tokens[1], "-") == 0)
+	else if (strcmp(tokens[1], "-") == 0)
 	{
 		if (folder_prev == NULL)
 			perror("cd: OLDPWD not set\n");
@@ -87,8 +87,8 @@ int execute_cd(char **tokens)
 	{
 		perror("getcwd failed");
 	}
-	custom_setenv("OLDPWD", _getenv("PWD"), 1);
-	custom_setenv("PWD", folder_new, 1);
+	setenv("OLDPWD", getenv("PWD"), 1);
+	setenv("PWD", folder_new, 1);
 	free(folder_new);
 	return (1);
 }
