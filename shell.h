@@ -79,8 +79,8 @@ int custom_unsetenv(const char *name);
 int custom_putenv(char *str);
 char *custom_strchr(const char *str, int c);
 int custom_environSize(void);
-int shell_setenv(char **args);
-int shell_unsetenv(char **args);
+void shell_setenv(char **args);
+void shell_unsetenv(char **args);
 void handle_semicolon(char *input);
 int delim_tokenize(char *input, char **tokens, int max_tokens, char *delim);
 

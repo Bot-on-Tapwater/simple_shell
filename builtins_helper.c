@@ -89,24 +89,20 @@ void execute_cd(char **tokens)
  * Return: 0 or 1
  */
 /* Implementation of the setenv command */
-int shell_setenv(char **args)
+void shell_setenv(char **args)
 {
-	if (args[1] == NULL)
+	if (args[1] == NULL || args[2] == NULL)
 	{
-		/* If no arguments are provided, print an error message and return failure */
-		perror("setenv: Too few arguments\n");
-		return (1);
-	}
-	else if (args[2] == NULL)
-	{
-		/* If only one argument is provided, use an empty string as the value */
-		custom_setenv(args[1], "", 1);
-		return (0);
+		write(STDERR_FILENO, "setenv: invalid arguments\n",
+		getStringLength("setenv: invalid arguments\n"));
 	}
 	else
 	{
-		custom_setenv(args[1], args[2], 1);
-		return (0);
+		if (setenv(args[1], args[2], 1) != 0) /* set environment variable */
+		{
+			write(STDERR_FILENO, "setenv: failed to set variable\n",
+			getStringLength("setenv: failed to set variable\n"));
+		}
 	}
 }
 
@@ -116,17 +112,20 @@ int shell_setenv(char **args)
  * Return: 0 or 1
  */
 /*  Implementation of the unsetenv command */
-int shell_unsetenv(char **args)
+void shell_unsetenv(char **args)
 {
 	if (args[1] == NULL)
 	{
-		/* If no arguments are provided, print an error message and return failure */
-		perror("setenv: Too few arguments\n");
-		return (1);
+		write(STDERR_FILENO, "unsetenv: invalid arguments\n",
+		getStringLength("unsetenv: invalid arguments\n"));
 	}
 	else
 	{
-		custom_unsetenv(args[1]);
-		return (0);
+		if (unsetenv(args[1]) != 0) /* unset environment variable */
+		{
+			write(STDERR_FILENO, "unsetenv: failed to unset variable\n",
+			getStringLength("unsetenv: failed to unset variable\n"));
+		}
 	}
 }
+
