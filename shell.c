@@ -56,6 +56,10 @@ int tokenize(char *input, char **tokens, int max_tokens)
 
 	while (token != NULL && num_tokens < max_tokens)
 	{
+		if (token[0] == '#') /* if token is a comment, ignore rest of the line */
+		{
+			break;
+		}
 		tokens[num_tokens] = token; /* populate "tokens" array with strings */
 		num_tokens++; /* move to next index in "tokens" array */
 		token = strtok(NULL, " \n"); /* gets subsequent tokens/strings */
