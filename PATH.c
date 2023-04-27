@@ -35,7 +35,7 @@ void add_node(LL **head_ref, char *str)
 LL *path_list(void)
 {
 	LL *head = NULL;
-	char *path = getenv("PATH");
+	char *path = _getenv("PATH");
 	char *path_copy = my_strdup(path);
 	LL *node;
 	char *token;
