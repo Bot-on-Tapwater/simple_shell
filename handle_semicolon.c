@@ -42,7 +42,7 @@ void handle_semicolon(char *input)
 }
 
 /**
- * delim_tokenize - breaks a string into tokens using my_strtok() function
+ * delim_tokenize - breaks a string into tokens using strtok() function
  * @input: input string that needs to be tokenized.
  * @tokens: array that will hold the resulting tokens
  * @max_tokens: max no of tokens that can be extracted from the input string
@@ -52,13 +52,13 @@ void handle_semicolon(char *input)
 int delim_tokenize(char *input, char **tokens, int max_tokens, char *delim)
 {
 	int num_tokens = 0;
-	char *token = my_strtok(input, delim); /* get first token/string */
+	char *token = strtok(input, delim); /* get first token/string */
 
 	while (token != NULL && num_tokens < max_tokens)
 	{
 		tokens[num_tokens] = token; /* populate "tokens" array with strings */
 		num_tokens++; /* move to next index in "tokens" array */
-		token = my_strtok(NULL, delim); /* gets subsequent tokens/strings */
+		token = strtok(NULL, delim); /* gets subsequent tokens/strings */
 	}
 	tokens[num_tokens] = NULL; /* tokens array has to end with NULL*/
 	/*execve() works with null terminated strings */

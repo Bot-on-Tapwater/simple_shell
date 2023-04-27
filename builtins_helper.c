@@ -50,7 +50,7 @@ void execute_cd(char **tokens)
 		path = _getenv("OLDPWD"); /* if argument is "-", use OLDPWD directory */
 		if (path == NULL)
 		{
-			writeStringToStderr("cd: OLDPWD not set\n");
+			perror("cd: OLDPWD not set\n");
 			return;
 		}
 	}
@@ -59,24 +59,24 @@ void execute_cd(char **tokens)
 	cwd = getcwd(NULL, 0);
 	if (cwd == NULL)
 	{
-		writeStringToStderr("cd: getcwd failed\n");
+		perror("cd: getcwd failed\n");
 		return;
 	}
 	if (chdir(path) != 0) /* change directory */
 	{
-		writeStringToStderr("cd: unable to change directory\n");
+		perror("cd: unable to change directory\n");
 		free(cwd);
 		return;
 	}
 	if (setenv("OLDPWD", cwd, 1) != 0) /* set OLDPWD environment variable */
 	{
-		writeStringToStderr("cd: failed to set OLDPWD environment variable\n");
+		perror("cd: failed to set OLDPWD environment variable\n");
 		free(cwd);
 		return;
 	}
 	if (setenv("PWD", getcwd(NULL, 0), 1) != 0) /* set PWD environment variable */
 	{
-		writeStringToStderr("cd: failed to set PWD environment variable\n");
+		perror("cd: failed to set PWD environment variable\n");
 		free(cwd);
 		return;
 	}
@@ -94,7 +94,7 @@ int shell_setenv(char **args)
 	if (args[1] == NULL)
 	{
 		/* If no arguments are provided, print an error message and return failure */
-		writeStringToStderr("setenv: Too few arguments\n");
+		perror("setenv: Too few arguments\n");
 		return (1);
 	}
 	else if (args[2] == NULL)
@@ -121,7 +121,7 @@ int shell_unsetenv(char **args)
 	if (args[1] == NULL)
 	{
 		/* If no arguments are provided, print an error message and return failure */
-		writeStringToStderr("setenv: Too few arguments\n");
+		perror("setenv: Too few arguments\n");
 		return (1);
 	}
 	else

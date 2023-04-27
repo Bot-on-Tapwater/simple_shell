@@ -44,7 +44,7 @@ int main(void)
 }
 
 /**
- * tokenize - breaks a string into tokens using my_strtok() function
+ * tokenize - breaks a string into tokens using strtok() function
  * @input: input string that needs to be tokenized.
  * @tokens: array that will hold the resulting tokens
  * @max_tokens: max no of tokens that can be extracted from the input string
@@ -53,13 +53,13 @@ int main(void)
 int tokenize(char *input, char **tokens, int max_tokens)
 {
 	int num_tokens = 0;
-	char *token = my_strtok(input, " \n"); /* get first token/string */
+	char *token = strtok(input, " \n"); /* get first token/string */
 
 	while (token != NULL && num_tokens < max_tokens)
 	{
 		tokens[num_tokens] = token; /* populate "tokens" array with strings */
 		num_tokens++; /* move to next index in "tokens" array */
-		token = my_strtok(NULL, " \n"); /* gets subsequent tokens/strings */
+		token = strtok(NULL, " \n"); /* gets subsequent tokens/strings */
 	}
 	tokens[num_tokens] = NULL; /* tokens array has to end with NULL*/
 	/*execve() works with null terminated strings */
@@ -101,7 +101,7 @@ char *command_checker(char **tokens)
 
 		if (path == NULL)
 		{
-			writeStringToStderr(myStrcat(tokens[0], ": command not found\n"));
+			perror(myStrcat(tokens[0], ": command not found\n"));
 		}
 		else
 		{

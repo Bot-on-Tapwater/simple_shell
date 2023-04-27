@@ -94,7 +94,7 @@ int myStrncmp(const char *s1, const char *s2, size_t n)
  */
 char *my_strdup(const char *str)
 {
-	size_t len = strlen(str) + 1;
+	size_t len = getStringLength(str) + 1;
 	char *new_str = malloc(len);
 
 	if (new_str == NULL)
