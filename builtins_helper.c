@@ -8,9 +8,9 @@ void execute_exit(char **tokens)
 {
 	if (tokens[1] != NULL) /* check if there is an argument provided */
 	{
-		int status = atoi(tokens[1]); /* convert argument to integer */
+		/* int status = atoi(tokens[1]); */ /* convert argument to integer */
 
-		exit(status); /* exit shell with provided status */
+		exit(atoi(tokens[1])); /* exit shell with provided status */
 	}
 	else
 	{
@@ -68,13 +68,13 @@ void execute_cd(char **tokens)
 		free(cwd);
 		return;
 	}
-	if (setenv("OLDPWD", cwd, 1) != 0) /* set OLDPWD environment variable */
+	if (custom_setenv("OLDPWD", cwd, 1) != 0)
 	{
 		perror("cd: failed to set OLDPWD environment variable\n");
 		free(cwd);
 		return;
 	}
-	if (setenv("PWD", getcwd(NULL, 0), 1) != 0) /* set PWD environment variable */
+	if (custom_setenv("PWD", getcwd(NULL, 0), 1) != 0)
 	{
 		perror("cd: failed to set PWD environment variable\n");
 		free(cwd);
