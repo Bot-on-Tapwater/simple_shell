@@ -11,14 +11,7 @@ char *read_input()
 
 	if (getline(&input, &input_size, stdin) == -1)
 	{
-		if (feof(stdin))
-		{
-			exit(EXIT_SUCCESS);
-		}
-		else
-		{
-			perror("read_line failed");
-		}
+		return (NULL); /* end of file */
 	}
 	return (input);
 }
