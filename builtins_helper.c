@@ -6,15 +6,25 @@
  */
 void execute_exit(char **tokens)
 {
-	if (tokens[1] != NULL) /* check if there is an argument provided */
-	{
-		/* int status = atoi(tokens[1]); */ /* convert argument to integer */
+	int size = 0;
+	const char* error_msg;
 
+	while (tokens[size] != NULL) /* count the number of elements in the array */
+	{
+		size++;
+	}
+	if (size > 2) /* check if there are too many arguments */
+	{
+		error_msg = "Error: too many arguments\n";
+		write(STDERR_FILENO, error_msg, strlen(error_msg));
+	}
+	else if (size == 2) /* check if there is an argument provided */
+	{
 		exit(atoi(tokens[1])); /* exit shell with provided status */
 	}
 	else
 	{
-		exit(0); /* exit the shell with default status 0 */
+		exit (0); /* exit the shell without specifying a status */
 	}
 }
 
