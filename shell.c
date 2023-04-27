@@ -7,8 +7,6 @@ int main(void)
 {
 	char *input = NULL;         /* buffer to store user input */
 	char *tokens[MAX_NUM_TOKENS];   /* array of tokens/strings */
-	size_t input_size = 0;
-	int rnd;
 	int num_tokens;
 
 	while (1)
@@ -17,13 +15,7 @@ int main(void)
 		{
 			write(STDOUT_FILENO, "#cisfun$ ", 9);   /* displays prompt */
 		}
-		rnd = getline(&input, &input_size, stdin);
-
-		if (rnd == EOF)
-		{
-			free(input);
-			exit(0); /* end of file */
-		}
+		input = read_input(); /* read user input */
 		if (input == NULL) /* end of file */
 		{
 			if (isatty(0))
@@ -33,13 +25,18 @@ int main(void)
 			free(input);
 			exit(0);
 		}
+
 		if (custom_strchr(input, ';') != NULL) /* ; separator found */
+		{
 			handle_semicolon(input);
+		}
 		else
 		{
 			num_tokens = tokenize(input, tokens, MAX_NUM_TOKENS);
 			if (num_tokens > 0) /* only true if at least one string is entered */
+			{
 				execute(tokens); /* execute user command */
+			}
 		}
 		free(input); /* free resources */
 	}
