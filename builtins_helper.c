@@ -7,7 +7,7 @@
 void execute_exit(char **tokens)
 {
 	int size = 0;
-	const char* error_msg;
+	const char *error_msg;
 
 	while (tokens[size] != NULL) /* count the number of elements in the array */
 	{
@@ -16,7 +16,7 @@ void execute_exit(char **tokens)
 	if (size > 2) /* check if there are too many arguments */
 	{
 		error_msg = "Error: too many arguments\n";
-		write(STDERR_FILENO, error_msg, strlen(error_msg));
+		write(STDERR_FILENO, error_msg, getStringLength(error_msg));
 	}
 	else if (size == 2) /* check if there is an argument provided */
 	{
@@ -24,7 +24,7 @@ void execute_exit(char **tokens)
 	}
 	else
 	{
-		exit (0); /* exit the shell without specifying a status */
+		exit(0); /* exit the shell without specifying a status */
 	}
 }
 
@@ -48,55 +48,49 @@ void execute_env(char **env)
 /**
  * execute_cd - cd builtin
  * @tokens: tokenized commands
+ * Return: 0
  */
-void execute_cd(char **tokens)
+int execute_cd(char **tokens)
 {
-	char *path;
-	char *cwd = getcwd(NULL, 0);
-
+	char *folder_new = getcwd(NULL, 0);
+	char *folder_prev = getenv("OLDPWD");
 
 	if (tokens[1] == NULL)
-		path = getenv("HOME"); /* if no argument is given, use HOME directory */
+	{
+		if (chdir(getenv("HOME")) != 0)
+		{
+			perror("cd");
+		}
+	}
 	else if (my_strcmp(tokens[1], "-") == 0)
 	{
-		path = getenv("OLDPWD"); /* if argument is "-", use OLDPWD directory */
-		if (path == NULL)
+		if (folder_prev == NULL)
+			perror("cd: OLDPWD not set\n");
+		else
 		{
-			write(STDERR_FILENO, "cd: OLDPWD not set\n",
-			getStringLength("cd: OLDPWD not set\n"));
-			return;
+			if (chdir(folder_prev) != 0)
+			{
+				perror("cd");
+			}
+			write(STDERR_FILENO, folder_prev, getStringLength(folder_prev));
+			write(STDERR_FILENO, "\n", 1);
 		}
 	}
 	else
-		path = tokens[1]; /* use the given path */
-	if (cwd == NULL)
 	{
-		write(STDERR_FILENO, "cd: getcwd failed\n",
-		getStringLength("cd: getcwd failed\n"));
-		return;
+		if (chdir(tokens[1]) != 0)
+		{
+			perror("cd");
+		}
 	}
-	if (chdir(path) != 0) /* change directory */
+	if (folder_new == NULL)
 	{
-		write(STDERR_FILENO, "cd: unable to change directory\n",
-		getStringLength("cd: unable to change directory\n"));
-		free(cwd);
-		return;
+		perror("getcwd failed");
 	}
-	if (setenv("OLDPWD", cwd, 1) != 0) /* set OLDPWD environment variable */
-	{
-		write(STDERR_FILENO, "cd: failed to set OLDPWD environment variable\n",
-		getStringLength("cd: failed to set OLDPWD environment variable\n"));
-		free(cwd);
-		return;
-	}
-	if (setenv("PWD", getcwd(NULL, 0), 1) != 0) /* set PWD environment variable */
-	{
-		write(STDERR_FILENO, "cd: failed to set PWD environment variable\n",
-		getStringLength("cd: failed to set PWD environment variable\n"));
-		free(cwd);
-		return;
-	}
-	free(cwd);
+	setenv("OLDPWD", getenv("PWD"), 1);
+	setenv("PWD", folder_new, 1);
+	free(folder_new);
+	return (1);
 }
 
 /**

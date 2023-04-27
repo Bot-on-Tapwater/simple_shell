@@ -25,7 +25,6 @@ int main(void)
 			free(input);
 			exit(0);
 		}
-
 		if (custom_strchr(input, ';') != NULL) /* ; separator found */
 		{
 			handle_semicolon(input);

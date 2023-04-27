@@ -64,7 +64,7 @@ char *my_strdup(const char *str);
 
 void execute_exit(char **tokens);
 void execute_env(char **env);
-void execute_cd(char **tokens);
+int execute_cd(char **tokens);
 
 ssize_t my_getline(char **lineptr, size_t *n, int fd);
 char *expand_buffer(char *buf, size_t buf_size);
@@ -83,5 +83,6 @@ void shell_setenv(char **args);
 void shell_unsetenv(char **args);
 void handle_semicolon(char *input);
 int delim_tokenize(char *input, char **tokens, int max_tokens, char *delim);
+int logical_operators(char **tokens);
 
 #endif
