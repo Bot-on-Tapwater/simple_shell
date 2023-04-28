@@ -33,10 +33,13 @@ int main(int argc, char **argv)
 			free(input);
 			exit(0);
 		}
-		num_tokens = tokenize(input, tokens, MAX_NUM_TOKENS);
-		if (num_tokens > 0) /* only true if at least one string is entered */
+		if (custom_strchr(input, ';') != NULL) /* ; separator found */
+			handle_semicolon(input);
+		else
 		{
-			execute(tokens); /* execute user command */
+			num_tokens = tokenize(input, tokens, MAX_NUM_TOKENS);
+			if (num_tokens > 0) /* only true if at least one string is entered */
+				execute(tokens); /* execute user command */
 		}
 		free(input); /* free resources */
 	}

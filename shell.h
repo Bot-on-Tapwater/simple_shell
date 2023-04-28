@@ -86,4 +86,7 @@ int delim_tokenize(char *input, char **tokens, int max_tokens, char *delim);
 int logical_operators(char **tokens);
 int file_input(int argc, char **argv);
 
+void alias_command(char **args);
+void print_aliases(void);
+
 #endif
