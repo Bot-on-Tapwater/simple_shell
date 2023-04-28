@@ -57,7 +57,7 @@ void writeStringToStderr(char *str)
 }
 
 /**
- * my_strcmp - compares two strings to determine if they are equal
+ * my_strcmp - compares two strings and return their difference
  * @str1: the string compared
  * @str2: the second string compared
  * Return: the diff btwn the ASCII values of the characters pointed by str
