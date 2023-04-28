@@ -4,7 +4,7 @@ This is a simple shell project written in C. It allows users to execute basic co
 ## How to Use
 To run the program, compile the code using the following command:
 
-`gcc -o shell shell.c`
+`gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o hsh`
 
 Then, run the executable by typing the following command:
 
