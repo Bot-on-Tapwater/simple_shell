@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 			free(input);
 			exit(0);
 		}
-		if (custom_strchr(input, ';') != NULL) /* ; separator found */
+		if (strchr(input, ';') != NULL) /* ; separator found */
 			handle_semicolon(input);
 		else
 		{
