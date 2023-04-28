@@ -7,8 +7,8 @@
  */
 int main(int argc, char **argv)
 {
-	char *input = NULL;         /* buffer to store user input */
-	char *tokens[MAX_NUM_TOKENS];   /* array of tokens/strings */
+	char *input = NULL;	      /* buffer to store user input */
+	char *tokens[MAX_NUM_TOKENS]; /* array of tokens/strings */
 	int num_tokens;
 
 	if (argc > 1 && my_strcmp(argv[0], "./hsh") == 0)
@@ -16,15 +16,14 @@ int main(int argc, char **argv)
 		file_input(argc, argv);
 		exit(0);
 	}
-
 	while (1)
 	{
 		if (isatty(0))
 		{
-			write(STDOUT_FILENO, "#cisfun$ ", 9);   /* displays prompt */
+			write(STDOUT_FILENO, "#cisfun$ ", 9); /* displays prompt */
 		}
 		input = read_input(); /* read user input */
-		if (input == NULL) /* end of file */
+		if (input == NULL)    /* end of file */
 		{
 			if (isatty(0))
 			{
@@ -38,8 +37,12 @@ int main(int argc, char **argv)
 		else
 		{
 			num_tokens = tokenize(input, tokens, MAX_NUM_TOKENS);
-			if (num_tokens > 0) /* only true if at least one string is entered */
-				execute(tokens); /* execute user command */
+			if (num_tokens > 0 && strcmp(tokens[0], "alias") != 0)
+				execute(tokens);
+			else
+			{
+				alias_command(tokens);
+			}
 		}
 		free(input); /* free resources */
 	}
@@ -64,8 +67,8 @@ int tokenize(char *input, char **tokens, int max_tokens)
 		{
 			break;
 		}
-		tokens[num_tokens] = token; /* populate "tokens" array with strings */
-		num_tokens++; /* move to next index in "tokens" array */
+		tokens[num_tokens] = token;  /* populate "tokens" array with strings */
+		num_tokens++;		     /* move to next index in "tokens" array */
 		token = strtok(NULL, " \n"); /* gets subsequent tokens/strings */
 	}
 	tokens[num_tokens] = NULL; /* tokens array has to end with NULL*/

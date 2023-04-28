@@ -30,6 +30,18 @@ typedef struct linkedList
 	char *str;
 	struct linkedList *next;
 } LL;
+/**
+ * struct alias_node - alias variables linked list
+ * @name: alias name
+ * @value: alias value
+ * @next: pointer to next node
+ */
+typedef struct alias_node
+{
+	char *name;
+	char *value;
+	struct alias_node *next;
+} alias_node;
 
 /* char *read_input(void); */
 char *command_checker(char **tokens);
@@ -86,7 +98,7 @@ int delim_tokenize(char *input, char **tokens, int max_tokens, char *delim);
 int logical_operators(char **tokens);
 int file_input(int argc, char **argv);
 
-void alias_command(char **args);
 void print_aliases(void);
+void alias_command(char **args);
 
 #endif
