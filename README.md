@@ -8,7 +8,7 @@ To run the program, compile the code using the following command:
 
 Then, run the executable by typing the following command:
 
-`./shell`
+`./hsh`
 
 The shell will then start, and you can enter commands just like you would in a regular terminal.
 
