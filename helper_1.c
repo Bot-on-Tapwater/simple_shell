@@ -1,7 +1,7 @@
 #include "shell.h"
 
 /**
- * read_input - read_input function reads user input from stdin using getline()
+ * read_input - reads user input from stdin using getline()
  * Return: Returns input from stdout
  */
 char *read_input()
