@@ -96,7 +96,7 @@ char *command_checker(char **tokens)
 	/* check if command is full PATH or shorthand version*/
 	/*(ls OR /bin/ls)*/
 	{
-		/* if full PATH, proceed to execute with execve */
+		/* if full PATH, proceed to execute with execute function */
 		path = tokens[0];
 		return (path);
 	}
