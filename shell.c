@@ -11,10 +11,13 @@ int main(int argc, char **argv)
 	char *tokens[MAX_NUM_TOKENS]; /* array of tokens/strings */
 	int num_tokens;
 
-	if (argc > 1 && my_strcmp(argv[0], "./hsh") == 0)
+	if (!isatty(0))
 	{
-		file_input(argc, argv);
-		exit(0);
+		if (argc > 1 && my_strcmp(argv[0], "./hsh") == 0)
+		{
+			file_input(argc, argv);
+			exit(0);
+		}
 	}
 	while (1)
 	{
