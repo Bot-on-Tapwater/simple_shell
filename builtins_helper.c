@@ -48,7 +48,7 @@ void execute_env(char **env)
 /**
  * execute_cd - cd builtin
  * @tokens: tokenized commands
- * Return: 0
+ * Return: 0 on success
  */
 int execute_cd(char **tokens)
 {
