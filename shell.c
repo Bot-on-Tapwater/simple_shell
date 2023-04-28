@@ -150,7 +150,7 @@ void execute(char **tokens)
 	{
 		if (waitpid(pid, &status, 0) == -1) /*check for errors*/
 		{
-			perror("waitpid failed"); /*handle error*/
+			perror("waitpid failed"); /*print error msg*/
 			exit(1);
 		}
 		/*it's parent process, ask it to wait for child process to complete*/
