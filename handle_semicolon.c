@@ -17,7 +17,7 @@ void handle_semicolon(char *input)
 	for (j = 0; commands[j] != NULL; j++)
 	{
 		delim_tokenize(commands[j], args, MAX_NUM_TOKENS, " \t\n");
-		if (args[0] != NULL)/*check if arguments are passed*/
+		if (args[0] != NULL)/*check if user passes arguments*/
 		{
 			pid = fork();
 			if (pid == 0)
