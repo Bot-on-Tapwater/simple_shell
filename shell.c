@@ -122,23 +122,35 @@ char *command_checker(char **tokens)
 void execute(char **tokens)
 {
 	pid_t pid;
+	int status;
 	char *path = command_checker(tokens);
 
 	if (path == NULL)
 	{
 		return;
 	}
+	else if (strcmp(path, "error") == 0) /*check for error code*/
+	{
+		write(STDERR_FILENO, "Invalid command\n", strlen("Invalid command\n"));
+		return;
+	}
 
 	pid = fork(); /* create child process using fork before calling execve()*/
 	if (pid == 0) /* if pid == 0 execute child process */
 	{
-		execve(path, tokens, environ); /* execute commands using execve() */
-		perror("execve failure"); /* only execeutes if execve fails */
-		exit(1); /* only execeutes if execve fails */
+		if (execve(path, tokens, environ) == -1) /*check for errors*/
+		{
+			perror("execve failure"); /*handle error*/
+			exit(1);
+		}
 	}
 	else if (pid > 0) /* fork() is > 0 for parent process thus pid > 0 */
 	{
-		wait(NULL);
+		if (waitpid(pid, &status, 0) == -1) /*check for errors*/
+		{
+			perror("waitpid failed"); /*handle error*/
+			exit(1);
+		}
 		/*it's parent process, ask it to wait for child process to complete*/
 	}
 	else /* only true if fork() fails pid == -1 */
