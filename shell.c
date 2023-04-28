@@ -7,8 +7,8 @@
  */
 int main(int argc, char **argv)
 {
-	char *input = NULL;	      /* buffer to store user input */
-	char *tokens[MAX_NUM_TOKENS]; /* array of tokens/strings */
+	char *input = NULL;         /* buffer to store user input */
+	char *tokens[MAX_NUM_TOKENS];   /* array of tokens/strings */
 	int num_tokens;
 
 	if (argc > 1 && my_strcmp(argv[0], "./hsh") == 0)
@@ -16,14 +16,15 @@ int main(int argc, char **argv)
 		file_input(argc, argv);
 		exit(0);
 	}
+
 	while (1)
 	{
 		if (isatty(0))
 		{
-			write(STDOUT_FILENO, "#cisfun$ ", 9); /* displays prompt */
+			write(STDOUT_FILENO, "#cisfun$ ", 9);   /* displays prompt */
 		}
 		input = read_input(); /* read user input */
-		if (input == NULL)    /* end of file */
+		if (input == NULL) /* end of file */
 		{
 			if (isatty(0))
 			{
@@ -32,13 +33,10 @@ int main(int argc, char **argv)
 			free(input);
 			exit(0);
 		}
-		if (strchr(input, ';') != NULL) /* ; separator found */
-			handle_semicolon(input);
-		else
+		num_tokens = tokenize(input, tokens, MAX_NUM_TOKENS);
+		if (num_tokens > 0) /* only true if at least one string is entered */
 		{
-			num_tokens = tokenize(input, tokens, MAX_NUM_TOKENS);
-			if (num_tokens > 0 && strcmp(tokens[0], "alias") != 0)
-				execute(tokens);
+			execute(tokens); /* execute user command */
 		}
 		free(input); /* free resources */
 	}
@@ -63,8 +61,8 @@ int tokenize(char *input, char **tokens, int max_tokens)
 		{
 			break;
 		}
-		tokens[num_tokens] = token;  /* populate "tokens" array with strings */
-		num_tokens++;		     /* move to next index in "tokens" array */
+		tokens[num_tokens] = token; /* populate "tokens" array with strings */
+		num_tokens++; /* move to next index in "tokens" array */
 		token = strtok(NULL, " \n"); /* gets subsequent tokens/strings */
 	}
 	tokens[num_tokens] = NULL; /* tokens array has to end with NULL*/
@@ -116,6 +114,43 @@ char *command_checker(char **tokens)
 	}
 	return (NULL);
 }
+int execute_logical_operators(char **tokens, int status_var)
+{
+	int i = 0;
+	
+	while (tokens[i] != NULL)
+	{
+		if (strcmp(tokens[i], "&&") == 0)
+		{
+			tokens[i] = NULL;
+			execute(tokens);
+			status_var = status_var && WIFEXITED(status_var) && (WEXITSTATUS(status_var) == 0);
+			if (status_var == 0)
+			{
+				return (status_var);
+			}
+			tokens += i + 1;
+			i = 0;
+			continue;
+		}
+		else if (strcmp(tokens[i], "||") == 0)
+		{
+			tokens[i] = NULL;
+			execute(tokens);
+			status_var = status_var && WIFEXITED(status_var) && (WEXITSTATUS(status_var) == 0);
+			if (status_var == 1)
+			{
+				return (status_var);
+			}
+			tokens += i + 1;
+			i = 0;
+		continue;
+		}
+		i++;
+	}
+	return (status_var);
+}
+
 
 /**
  * execute - creates a child process using fork() and executes command
@@ -126,6 +161,7 @@ void execute(char **tokens)
 	pid_t pid;
 	int status;
 	char *path = command_checker(tokens);
+	int status_var = 0;
 
 	if (path == NULL)
 	{
@@ -140,6 +176,7 @@ void execute(char **tokens)
 	pid = fork(); /* create child process using fork before calling execve()*/
 	if (pid == 0) /* if pid == 0 execute child process */
 	{
+		status_var = execute_logical_operators(tokens, status_var);
 		if (execve(path, tokens, environ) == -1) /*check for errors*/
 		{
 			perror("execve failure"); /*handle error*/
@@ -153,6 +190,7 @@ void execute(char **tokens)
 			perror("waitpid failed"); /*handle error*/
 			exit(1);
 		}
+		status_var = WIFEXITED(status) ? WEXITSTATUS(status) : 0;
 		/*it's parent process, ask it to wait for child process to complete*/
 	}
 	else /* only true if fork() fails pid == -1 */
