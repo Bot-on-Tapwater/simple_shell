@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 	}
 	while (1)
 	{
-		if (isatty(0))
+		if (isatty(0)) /* chech if shell is interactive*/
 		{
 			write(STDOUT_FILENO, "#cisfun$ ", 9); /* displays prompt */
 		}
