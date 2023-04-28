@@ -39,10 +39,6 @@ int main(int argc, char **argv)
 			num_tokens = tokenize(input, tokens, MAX_NUM_TOKENS);
 			if (num_tokens > 0 && strcmp(tokens[0], "alias") != 0)
 				execute(tokens);
-			else
-			{
-				alias_command(tokens);
-			}
 		}
 		free(input); /* free resources */
 	}
