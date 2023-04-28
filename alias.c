@@ -43,13 +43,13 @@ void alias_command(char **args)
 
 	for (i = 1; args[i] != NULL; i++)
 	{
-		equal_sign = strchr(args[i], '=');
+		equal_sign = custom_strchr(args[i], '=');
 		if (equal_sign == NULL)
 		{
 			current = alias_list;
 			while (current != NULL)
 			{
-				if (strcmp(args[i], current->name) == 0)
+				if (my_strcmp(args[i], current->name) == 0)
 				{
 				len = snprintf(buffer, 1024, "%s='%s'\n", current->name, current->value);
 				write(STDOUT_FILENO, buffer, len);
@@ -66,10 +66,10 @@ void alias_command(char **args)
 		current = alias_list;
 		while (current != NULL)
 		{
-			if (strcmp(name, current->name) == 0)
+			if (my_strcmp(name, current->name) == 0)
 			{
 			free(current->value);
-			current->value = strdup(value);
+			current->value = my_strdup(value);
 			break;
 			}
 			current = current->next;
@@ -78,8 +78,8 @@ void alias_command(char **args)
 		if (current == NULL)
 		{
 			new_alias = malloc(sizeof(alias_node));
-			new_alias->name = strdup(name);
-			new_alias->value = strdup(value);
+			new_alias->name = my_strdup(name);
+			new_alias->value = my_strdup(value);
 			new_alias->next = alias_list;
 			alias_list = new_alias;
 		}
