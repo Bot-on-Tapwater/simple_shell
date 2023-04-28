@@ -2,7 +2,7 @@
 
 /**
  * handle_semicolon - handles ";" separator
- * @input: input string that needs to be tokenized.
+ * @input: input string that needs to be tokenized
  */
 void handle_semicolon(char *input)
 {
@@ -17,7 +17,7 @@ void handle_semicolon(char *input)
 	for (j = 0; commands[j] != NULL; j++)
 	{
 		delim_tokenize(commands[j], args, MAX_NUM_TOKENS, " \t\n");
-		if (args[0] != NULL)
+		if (args[0] != NULL)/*check if arguments are passed*/
 		{
 			pid = fork();
 			if (pid == 0)
