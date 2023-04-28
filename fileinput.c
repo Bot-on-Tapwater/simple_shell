@@ -1,7 +1,7 @@
 #include "shell.h"
 
 /**
- * file_input - Handles file input
+ * file_input - opens shell scripts in non-intective mode
  * @argc: argc
  * @argv: argv
  * Return: 0 on success
