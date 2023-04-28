@@ -1,7 +1,7 @@
 #include "shell.h"
 
 /**
- * execute_builtins - handles env and exit builtin functions
+ * execute_builtins - handles builtin functions
  * @tokens: tokenized commands
  * @env: contains values of environ
  */
